@@ -1,6 +1,6 @@
 macro_rules! sort_rules {
 	($rules:expr) => {
-		$rules.sort_by(|left, right| left.priority.cmp(&right.priority));
+		$rules.sort_unstable_by(|left, right| left.priority.cmp(&right.priority));
 	};
 }
 
