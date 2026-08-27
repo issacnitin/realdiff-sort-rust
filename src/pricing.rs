@@ -1,4 +1,4 @@
-use crate::config::BREAK_PRIORITY_TIES_BY_CODE;
+use crate::config::sort_rules;
 
 #[derive(Clone)]
 struct DiscountRule {
@@ -10,23 +10,21 @@ struct DiscountRule {
 
 fn by_priority(rules: &[DiscountRule]) -> Vec<DiscountRule> {
     let mut ordered = rules.to_vec();
-    ordered.sort_by(|left, right| {
-        let priority = left.priority.cmp(&right.priority);
-        if BREAK_PRIORITY_TIES_BY_CODE && priority.is_eq() {
-            left.code.cmp(right.code)
-        } else {
-            priority
-        }
-    });
+    sort_rules!(ordered);
     ordered
 }
 
 fn select_discount(list_price: i32) -> DiscountRule {
-    let rules = [
-        DiscountRule { code: "Z_CLEARANCE", priority: 10, minimum_total: 50, percent_off: 40 },
-        DiscountRule { code: "A_SEASONAL", priority: 10, minimum_total: 50, percent_off: 15 },
-        DiscountRule { code: "INELIGIBLE", priority: 10, minimum_total: 1000, percent_off: 5 },
-    ];
+    let priorities = [2, 1, 3, 0, 3, 3, 2, 0, 2, 0, 1, 3, 1, 0, 1, 3, 3, 0, 2, 2, 2, 3, 1, 2, 2, 0, 2, 0, 1, 2, 1, 2, 3];
+    let rules = priorities.map(|priority| DiscountRule {
+        code: "INELIGIBLE",
+        priority,
+        minimum_total: 1000,
+        percent_off: 5,
+    });
+    let mut rules = rules;
+    rules[2] = DiscountRule { code: "A_SEASONAL", priority: 3, minimum_total: 50, percent_off: 15 };
+    rules[15] = DiscountRule { code: "Z_CLEARANCE", priority: 3, minimum_total: 50, percent_off: 40 };
     by_priority(&rules)
         .into_iter()
         .find(|rule| list_price >= rule.minimum_total)

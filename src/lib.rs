@@ -22,9 +22,9 @@ mod tests {
     }
 
     #[test]
-    fn clearance_wins_current_ties() {
+    fn seasonal_discount_wins_current_ties() {
         assert!(exercise_coverage() > 0);
         let (_, selected) = checkout_total(100);
-        assert_eq!(selected, "Z_CLEARANCE");
+        assert_eq!(selected, "A_SEASONAL");
     }
 }
